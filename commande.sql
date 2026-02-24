@@ -1,36 +1,39 @@
 Create table "Restaurants" (
-    "IdRestaurant" INTEGER,
+    "IdRestaurant" INTEGER PRIMARY KEY AUTOINCREMENT,
     "Name" VARCHAR(50),  
     "Planet" VARCHAR(50),
     "Opening-year" INTEGER
 );
 Create table "Employees" (
-    "IdEmployees" INTEGER,
-    "Firstname" VARCHAR(50)
-    "Lastname" VARCHAR(50)
-    "Role" VARCHAR(50)
-    "IdRestaurant" INTEGER
+    "IdEmployees" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "Firstname" VARCHAR(50),
+    "Lastname" VARCHAR(50),
+    "Role" VARCHAR(50),
+    "IdRestaurant" INTEGER, 
+    FOREIGN KEY (IdRestaurant) REFERENCES Restaurants(IdRestaurant)
 );
 
 Create table "Dishes" (
-    "IdDishes" INTEGER,
+    "IdDishes" INTEGER PRIMARY KEY AUTOINCREMENT,
     "Name" VARCHAR(50),
     "Price" INTEGER,
     "Category" VARCHAR(50)
 );
 
 Create table "Orders" (
-	"IdOrders" INTEGER,
+	"IdOrders" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"IdRestaurant" INTEGER,
 	"Total_amount" INTEGER,
 	"Customer_name" VARCHAR(50)
 );
 
 Create table "OrderItems" (
-    "IdOrderItems" INTEGER,
+    "IdOrderItems" INTEGER PRIMARY KEY AUTOINCREMENT,
     "IdOrders" INTEGER,
     "IdDishes" INTEGER,
-    "Quantity" INTEGER
+    "Quantity" INTEGER,
+    FOREIGN KEY (IdOrders) REFERENCES Orders(IdOrders)
+    FOREIGN KEY (IdDishes) REFERENCES Dishes(IdDishes)
 );
 
 ALTER TABLE Employees
@@ -102,5 +105,6 @@ SELECT Role
 FROM table Employees
 ORDER BY Role
 
-SELECT is_vegan
-FROM TABLE Dishes
+SELECT *
+FROM Dishes
+WHERE Price > (SELECT AVG(Price) FROM Dishes);
