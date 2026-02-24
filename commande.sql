@@ -102,3 +102,5 @@ SELECT Role
 FROM table Employees
 ORDER BY Role
 
+SELECT is_vegan
+FROM TABLE Dishes
