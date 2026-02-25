@@ -55,12 +55,16 @@ DROP TABLE "Restaurants";
 -- Ajouter une colonne 
 
 ALTER TABLE Employees 
-ADD COLUMN hire_date datetime
+ADD COLUMN hire_date datetime;
 
 -- ajout de colone non null
 
 ALTER TABLE Dishes
-ADD COLUMN is_vegan BOOLEAN NULL
+ADD COLUMN is_vegan BOOLEAN NULL;
+
+-- Renomer une table 
+ALTER TABLE Orders
+RENAME TO CustomerOrders;
 
 -- Initialiser les lignes 
 
@@ -75,3 +79,75 @@ VALUES ('X Æ A-12', 'Musk-Junior', 'Chef de Cuisine', 3);
 -- exemple dishes 
 INSERT INTO Dishes (Name, Price, Category)
 VALUES ('Burger d''Astéroïde Croquant', 45.50, 'Plat');
+
+-- exemple order 
+INSERT INTO CustomerOrders (IdRestaurant, Total_amount, Customer_name)
+VALUES (1, 150.50, 'Capitaine Kirk');
+
+-- exemple OrderItems
+INSERT INTO orderitems (IdOrders, IdDishes, Quantity)
+VALUES (1, 1, 2);
+
+-- maniputalion de la DB 
+-- * list all restaurants
+SELECT name
+FROM Restaurants;
+
+-- * tous les plats classe en decroissant 
+SELECT name, Price
+FROM Dishes
+ORDER BY Price DESC;
+
+-- * list employés par roles
+SELECT Firstname || ' ' || Lastname AS Employé, Role
+FROM Employees
+ORDER BY Role;
+
+-- * List plats vegan
+SELECT name AS 'Vegan Dishes'
+FROM Dishes
+WHERE is_vegan;
+
+-- * plat > moyenne
+SELECT name, Price
+FROM Dishes
+WHERE Price > (SELECT AVG(Price) FROM Dishes);
+
+-- GESTION DES NULLS
+
+-- * vegan NULL
+SELECT name
+FROM Dishes
+WHERE is_vegan IS NULL;
+
+-- * employés sans hire date
+SELECT Firstname || ' ' || Lastname As Employés
+FROM Employees
+WHERE hire_date IS NULL;
+
+-- Creation et gestions des commandes -------------------<>
+
+--* 3 commandes differents restau
+INSERT INTO CustomerOrders (IdRestaurant, Total_amount, Customer_name)
+VALUES (2, 22.50, 'Marty McFly'), (9, 12.0, 'Katniss Everdeen'), (4, 18.0, 'Luke Skywalker');
+
+--* order item associées 
+INSERT INTO orderitems (IdOrders, IdDishes, Quantity)
+VALUES (13, 1, 1), (14, 15, 1), (15, 2, 1);
+
+--* Calcul par commande (article/amount)
+SELECT 
+	CustomerOrders.IdOrders AS ID,
+	SUM(OrderItems.Quantity) / CustomerOrders.Total_amount AS Calcul
+FROM OrderItems
+LEFT JOIN CustomerOrders ON OrderItems.IdOrders = CustomerOrders.IdOrders
+GROUP BY OrderItems.IdOrders;
+
+--* List commandes par DESC 
+SELECT IdOrders,
+	Total_amount,
+	Customer_name
+FROM CustomerOrders
+ORDER BY Total_amount DESC;
+
+-- 
