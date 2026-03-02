@@ -1,37 +1,37 @@
 Create table "Restaurants" (
     "IdRestaurant" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "Name" VARCHAR(50),  
-    "Planet" VARCHAR(50),
-    "Opening-year" INTEGER
+    "Name" VARCHAR(50) NOT NULL,  
+    "Planet" VARCHAR(50) NOT NULL,
+    "Opening-year" INTEGER NOT NULL
 );
 Create table "Employees" (
     "IdEmployees" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "Firstname" VARCHAR(50),
-    "Lastname" VARCHAR(50),
-    "Role" VARCHAR(50),
-    "IdRestaurant" INTEGER, 
+    "Firstname" VARCHAR(50) NOT NULL,
+    "Lastname" VARCHAR(50) NOT NULL,
+    "Role" VARCHAR(50)NOT NULL ,
+    "IdRestaurant" INTEGER NOT NULL, 
     FOREIGN KEY (IdRestaurant) REFERENCES Restaurants(IdRestaurant)
 );
 
 Create table "Dishes" (
     "IdDishes" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "Name" VARCHAR(50),
+    "Name" VARCHAR(50) NOT NULL,
     "Price" INTEGER,
-    "Category" VARCHAR(50)
+    "Category" VARCHAR(50) NOT NULL
 );
 
 Create table "Orders" (
 	"IdOrders" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"IdRestaurant" INTEGER,
-	"Total_amount" INTEGER,
-	"Customer_name" VARCHAR(50)
+	"IdRestaurant" INTEGER NOT NULL,
+	"Total_amount" INTEGER NOT NULL,
+	"Customer_name" VARCHAR(50) NOT NULL
 );
 
 Create table "OrderItems" (
     "IdOrderItems" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "IdOrders" INTEGER,
-    "IdDishes" INTEGER,
-    "Quantity" INTEGER,
+    "IdOrders" INTEGER NOT NULL,
+    "IdDishes" INTEGER NOT NULL,
+    "Quantity" INTEGER NOT NULL,
     FOREIGN KEY (IdOrders) REFERENCES Orders(IdOrders)
     FOREIGN KEY (IdDishes) REFERENCES Dishes(IdDishes)
 );
@@ -146,6 +146,7 @@ LEFT JOIN Employees e ON e.IdRestaurant = r.IdRestaurant
 GROUP BY r.IdRestaurant, r.Name, r.Planet;
 
 DELETE FROM Dishes
+
 WHERE Price IS NULL;
 
 DELETE FROM CustomerOrders
@@ -159,3 +160,4 @@ SELECT *
 FROM Dishes
 ORDER BY Price DESC
 LIMIT 3
+
