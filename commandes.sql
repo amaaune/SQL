@@ -1,3 +1,5 @@
+-- Creation de la DB ------------------------------------<>
+
 -- Création de la table Restaurants
 
 CREATE TABLE "Restaurants" (
@@ -48,7 +50,7 @@ CREATE TABLE "OrderItems" (
     FOREIGN KEY (IdDishes) REFERENCES Dishes(IdDishes)
 );
 
--- Corriger nos mefaits 
+-- Corriger nos mefaits ---------------------------------<>
 
 DROP TABLE "Restaurants";
 
@@ -66,7 +68,7 @@ ADD COLUMN is_vegan BOOLEAN NULL;
 ALTER TABLE Orders
 RENAME TO CustomerOrders;
 
--- Initialiser les lignes 
+-- Initialiser les lignes -------------------------------<>
 
 -- exemple restaurants
 INSERT INTO Restaurants (Name, Planet, Opening_year)
@@ -88,7 +90,7 @@ VALUES (1, 150.50, 'Capitaine Kirk');
 INSERT INTO orderitems (IdOrders, IdDishes, Quantity)
 VALUES (1, 1, 2);
 
--- maniputalion de la DB 
+-- maniputalion de la DB --------------------------------<>
 -- * list all restaurants
 SELECT name
 FROM Restaurants;
@@ -150,4 +152,42 @@ SELECT IdOrders,
 FROM CustomerOrders
 ORDER BY Total_amount DESC;
 
--- 
+
+-- JOINTURES --------------------------------------------<>
+*
+*
+*
+
+-- Mise a Jours Intelligente ----------------------------<>
+
+--* Plat > 12 reduction de 10% 
+UPDATE Dishes
+SET Price = Price * 0.9
+WHERE Price > 12
+
+--* sinon reduction 5%
+UPDATE Dishes
+SET Price = Price * 0.95
+WHERE Price < 12
+
+-- Supressions ------------------------------------------<>
+
+--* Suppr Plat Prix NULL
+
+
+--* Suppr comande < 5
+
+-- Mini-Analyse -----------------------------------------<>
+
+--* Prix moyen par categorie
+SELECT name,
+	AVG(Price) AS 'Prix Moyen',
+	Category
+FROM Dishes
+GROUP BY Category;
+
+--* montant total des ventes
+
+--* les trois plats les plus cher
+
+--* 
