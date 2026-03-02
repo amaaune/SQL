@@ -97,9 +97,9 @@ VALUES
 
 SELECT * FROM Restaurants;
 
-SELECT Price,
+SELECT Price, Name
 FROM table Dishes
-ORDER BY Prive DESC,
+ORDER BY Price DESC,
 
 SELECT Role
 FROM table Employees
@@ -108,3 +108,46 @@ ORDER BY Role
 SELECT *
 FROM Dishes
 WHERE Price > (SELECT AVG(Price) FROM Dishes);
+
+SELECT *
+FROM Dishes
+WHERE is_vegan IS NULL µ
+
+SELECT *
+FROM Employees IS NULL  
+WHERE hire_date IS NULL;
+
+SELECT
+    e.IdEmployees,
+    e.Firstname,
+    e.Lastname,
+    e.Role,
+    r.Name AS RestaurantName,
+    r.Planet
+FROM Employees e
+LEFT JOIN Restaurants r ON r.IdRestaurant = e.IdRestaurant;
+
+SELECT
+    d.Name AS DishName,
+    co.Customer_name,
+    r.Planet
+FROM OrderItems oi
+JOIN Dishes d ON d.IdDishes = oi.IdDishes
+JOIN CustomerOrders co ON co.IdOrders = oi.IdOrders
+JOIN Restaurants r ON r.IdRestaurant = co.IdRestaurant;
+
+SELECT
+    r.IdRestaurant,
+    r.Name,
+    r.Planet,
+    COUNT(e.IdEmployees) AS nb_employees
+FROM Restaurants r
+LEFT JOIN Employees e ON e.IdRestaurant = r.IdRestaurant
+GROUP BY r.IdRestaurant, r.Name, r.Planet;
+
+DELETE FROM Dishes
+WHERE Price IS NULL;
+
+DELETE FROM CustomerOrders
+WHERE Total_amount < 5;
+
