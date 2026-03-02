@@ -151,3 +151,11 @@ WHERE Price IS NULL;
 DELETE FROM CustomerOrders
 WHERE Total_amount < 5;
 
+SELECT 
+    SUM(Total_amount) AS Total_sales
+FROM CustomerOrders;
+
+SELECT *
+FROM Dishes
+ORDER BY Price DESC
+LIMIT 3
