@@ -5,17 +5,17 @@
 CREATE TABLE "Restaurants" (
     "IdRestaurant" INTEGER PRIMARY KEY AUTOINCREMENT,
     "Name" VARCHAR(50) NOT NULL,
-    "Planet" VARCHAR(50),
-    "Opening_year" INTEGER
+    "Planet" VARCHAR(50) NOT NULL,
+    "Opening_year" INTEGER NOT NULL
 );
 
 -- Création de la table employés
 
 CREATE TABLE "Employees" (
 	"IdEmployees" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"Firstname" VARCHAR(50),
-	"Lastname" VARCHAR(50),
-	"Role" VARCHAR(50),
+	"Firstname" VARCHAR(50) NOT NULL,
+	"Lastname" VARCHAR(50) NOT NULL,
+	"Role" VARCHAR(50) NOT NULL,
 	"IdRestaurant" INTEGER,
 	FOREIGN KEY (IdRestaurant) REFERENCES Restaurants(IdRestaurant)
 );
@@ -24,18 +24,18 @@ CREATE TABLE "Employees" (
 
 CREATE TABLE "Dishes" (
 	"IdDishes" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"Name" VARCHAR(50),
-	"Price" INTEGER,
-	"Category" VARCHAR(50)
+	"Name" VARCHAR(50) NOT NULL,
+	"Price" INTEGER NOT NULL, -- Attention si "NOT NULL" utilisé pendant la creation l'exercice de supressions des prix nuls ne suprimera rien. 
+	"Category" VARCHAR(50) NOT NULL
 );
 
 -- Creation orders
 
 CREATE TABLE "Orders" (
 	"IdOrders" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"IdRestaurant" INTEGER,
-	"Total_amount" INTEGER,
-	"Customer_name" VARCHAR(50),
+	"IdRestaurant" INTEGER NOT NULL,
+	"Total_amount" INTEGER NOT NULL,
+	"Customer_name" VARCHAR(50) NOT NULL,
 	FOREIGN KEY (IdRestaurant) REFERENCES Restaurants(IdRestaurant)
 );
 
@@ -43,24 +43,22 @@ CREATE TABLE "Orders" (
 
 CREATE TABLE "OrderItems" (
 	"IdOrderItems" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"IdOrders" INTEGER,
-	"IdDishes" INTEGER,
-	"Quantity" INTEGER,
+	"IdOrders" INTEGER NOT NULL,
+	"IdDishes" INTEGER NOT NULL,
+	"Quantity" INTEGER NOT NULL,
 	FOREIGN KEY (IdOrders) REFERENCES Orders(IdOrders),
     FOREIGN KEY (IdDishes) REFERENCES Dishes(IdDishes)
 );
 
 -- Corriger nos mefaits ---------------------------------<>
-
+-- Petite commande pour suprimer une table qui aurait ete mal initialisée (rajouter les NOT NULL par exemple) 
 DROP TABLE "Restaurants";
 
 -- Ajouter une colonne 
-
 ALTER TABLE Employees 
 ADD COLUMN hire_date datetime;
 
--- ajout de colone non null
-
+-- ajout de colone non null (BOOLEAN est nullable de base mais on prefere etre sur)
 ALTER TABLE Dishes
 ADD COLUMN is_vegan BOOLEAN NULL;
 
@@ -69,6 +67,7 @@ ALTER TABLE Orders
 RENAME TO CustomerOrders;
 
 -- Initialiser les lignes -------------------------------<>
+
 
 -- exemple restaurants
 INSERT INTO Restaurants (Name, Planet, Opening_year)
@@ -115,7 +114,7 @@ SELECT name, Price
 FROM Dishes
 WHERE Price > (SELECT AVG(Price) FROM Dishes);
 
--- GESTION DES NULLS
+-- GESTION DES NULLS ------------------------------------<>
 
 -- * vegan NULL
 SELECT name
@@ -154,28 +153,53 @@ ORDER BY Total_amount DESC;
 
 
 -- JOINTURES --------------------------------------------<>
-*
-*
-*
+
+--* Liste employee + nom restaurants
+SELECT
+    e.Firstname || ' ' || e.Lastname AS 'Employees',
+    r.Name AS RestaurantName
+FROM Employees e
+LEFT JOIN Restaurants r ON r.IdRestaurant = e.IdRestaurant;
+
+--*  Liste des plats commandés
+SELECT
+    d.Name AS DishName,
+    co.Customer_name,
+    r.Planet
+FROM OrderItems oi
+JOIN Dishes d ON d.IdDishes = oi.IdDishes
+JOIN CustomerOrders co ON co.IdOrders = oi.IdOrders
+JOIN Restaurants r ON r.IdRestaurant = co.IdRestaurant;
+
+--* Lister tous les restaurants avec leur nombre d’employés
+SELECT
+    r.Name,
+    COUNT(e.IdEmployees) AS 'Effectif'
+FROM Restaurants r
+LEFT JOIN Employees e ON e.IdRestaurant = r.IdRestaurant
+GROUP BY r.IdRestaurant, r.Name, r.Planet;
 
 -- Mise a Jours Intelligente ----------------------------<>
 
 --* Plat > 12 reduction de 10% 
 UPDATE Dishes
 SET Price = Price * 0.9
-WHERE Price > 12
+WHERE Price > 12;
 
 --* sinon reduction 5%
 UPDATE Dishes
 SET Price = Price * 0.95
-WHERE Price < 12
+WHERE Price < 12;
 
 -- Supressions ------------------------------------------<>
 
 --* Suppr Plat Prix NULL
-
+DELETE FROM Dishes
+WHERE Price IS NULL;
 
 --* Suppr comande < 5
+DELETE FROM CustomerOrders
+WHERE Total_amount < 5;
 
 -- Mini-Analyse -----------------------------------------<>
 
@@ -187,7 +211,18 @@ FROM Dishes
 GROUP BY Category;
 
 --* montant total des ventes
+SELECT 
+    SUM(Total_amount) AS 'Total des ventes'
+FROM CustomerOrders;
 
 --* les trois plats les plus cher
+SELECT *
+FROM Dishes
+ORDER BY Price DESC
+LIMIT 3;
 
---* 
+--* Les employés dont le nom contient la lettre “a”
+SELECT Firstname,
+	Lastname
+FROM Employees
+WHERE Lastname LIKE '%a%';
